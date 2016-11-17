@@ -5,6 +5,8 @@ When I start a new project, first thing after running git init is I realize I ne
 
 This is a Go application that creates a default gitignore based on the type of project.  Templates for the default .gitignore come from https://github.com/github/gitignore which is open source and actively contributed to, so you will always get an up to date gitignore for your projects using this tool!  In fact, the gitignore in this very project was the first .gitignore created using this tool.
 
+## Usage
+
 Creates a .gitignore in the current working directory with the defaults for the specified type of project.
 
 ````shell
@@ -18,6 +20,22 @@ gitignore macos linux windows python node vim
 ````
 
 Now your .gitignore contains all of the default .gitignore patterns from all of the github gitignores for MacOS, Linux, Windows, Python, Node, and Vim, so you're ready to commit whatever you need to on a cross-platform polyglot application.
+
+## Installation
+
+### From Source
+Install Go https://golang.org/
+
+Clone
+````
+git clone https://github.com/iepathos/gitignore.git
+cd gitignore
+go install
+````
+
+### From binary
+Not available yet, but very soon.
+
 
 ## Long List of Available .gitignores
 Any .gitignore available on https://github.com/github/gitignore should be available here.  If you find one that isn't, shoot a pull request or message to Glen Baker <iepathos@gmail.com>.
