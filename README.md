@@ -34,7 +34,7 @@ go install
 ````
 
 ### From binary
-Look in the [builds/ directory](https://github.com/iepathos/gitignore/tree/master/builds) of the repository for your system and use that for your executable.  Add to your bin or applications or any folder you want to use it from.
+Look in the [builds directory](https://github.com/iepathos/gitignore/tree/master/builds) of the repository for your system and use that for your executable.  Add to your bin or applications or any folder you want to use it from.
 
 
 ## Long List of Available .gitignores
