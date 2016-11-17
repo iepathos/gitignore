@@ -17,7 +17,7 @@ But wait, there's more!  You can chain multiple gitignores together.
 gitignore macos linux windows python node vim
 ````
 
-Now your .gitignore contains all of the default .gitignore patterns from all of the github gitignores for MacOS, Linux, Windows, Python, Node, and Vim, so you're ready to commit w/e you need to on a cross-platform polyglot application.
+Now your .gitignore contains all of the default .gitignore patterns from all of the github gitignores for MacOS, Linux, Windows, Python, Node, and Vim, so you're ready to commit whatever you need to on a cross-platform polyglot application.
 
 ## Long List of Available .gitignores
 Any .gitignore available on https://github.com/github/gitignore should be available here.  If you find one that isn't, shoot a pull request or message to Glen Baker <iepathos@gmail.com>.
