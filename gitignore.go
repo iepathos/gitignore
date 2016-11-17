@@ -205,7 +205,7 @@ func main() {
 				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Objective-C.gitignore")
 			case "opa":
 				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Opa.gitignore")
-			case "OpenCart":
+			case "opencart":
 				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/OpenCart.gitignore")
 			case "oracleforms":
 				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/OracleForms.gitignore")
