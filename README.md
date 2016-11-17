@@ -1,4 +1,4 @@
-Automatic Gitignore From Github
+Simple Gitignore From Github
 ---------
 
 When I start a new project, first thing after running git init is I realize I need to add a gitignore file before adding the initial files to the project.  So, I Google for basic gitignore like python gitignore and copy paste the sample provided from github/gitignore.  Everytime I do this I think wow I need to add a simple app to just do this for me.  After the thousandth time I created this application.
