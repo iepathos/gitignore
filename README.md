@@ -42,7 +42,6 @@ Look in the [builds directory](https://github.com/iepathos/gitignore/tree/master
 
 ## Planned Additions
 
-+ Add optional output file parameter
 + Add some custom stack defaults
 
 
