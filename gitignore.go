@@ -1,4 +1,7 @@
 package main
+// gitignore is an automatic .gitignore setup tool
+// .gitignores are the latest from https://github.com/github/gitignore
+// Written by Glen Baker <iepathos@gmail.com>
 
 import (
 	"os"
@@ -254,6 +257,8 @@ func main() {
 					copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Sdcc.gitignore")
 				case "seamgen":
 					copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SeamGen.gitignore")
+				case "sketchup":
+					copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SketchUp.gitignore")
 				case "smalltalk":
 					copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Smalltalk.gitignore")
 				case "stella":
@@ -443,7 +448,7 @@ func main() {
 					copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore")
 
 				default:
-					fmt.Println("Please pass type of gitignore to create, like: gitignore python")
+					fmt.Println("Given argument was not a recognized .gitignore default")
 		
 			}
 		}
