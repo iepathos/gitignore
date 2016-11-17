@@ -254,6 +254,6 @@ gitignore macos
 
 
 
-This is an open source project I've created to save us all from the hassle of copy-pasting default gitignore files for new projects.
+This is an open source project I've created to save us all from the hassle of copy-pasting default gitignore files for new projects.  Added under a GNU Public License v3.0.
 
 
