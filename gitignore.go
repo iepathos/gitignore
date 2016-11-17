@@ -14,18 +14,7 @@ import (
 	"strings"
 )
 
-func copyGitignoreUrl(url string) {
-	// retrieve gitignore from given url
-	resp, err := http.Get(url)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-
+func updateGitignore(body []byte) {
 	// write to file
 	f, err := os.OpenFile(".gitignore", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
@@ -37,423 +26,445 @@ func copyGitignoreUrl(url string) {
 	if _, err = f.Write(body); err != nil {
 		panic(err)
 	}
+}
 
-	fmt.Println("Updated .gitignore with", url)
+func copyGitignoreUrl(url string, ch chan<- []byte) {
+	// retrieve gitignore from given url
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	// fmt.Println("Retrieved", url)
+	ch <- body
 }
 
 func main() {
 	if (len(os.Args)) >= 2 {
+		// []byte to store multiple .gitignore request bodies
+		ch := make(chan []byte)
+		fmt.Println("Retrieving the requested .gitignore patterns from github.com/github/gitignore")
 		for i := 1; i < len(os.Args); i++ {
 			// for each arg add its env to the gitignore
 			// this way we can chain multiple gitignore together
 			// like: gitignore macos python node
 			switch env := strings.ToLower(os.Args[i]); env {
 			case "actionscript":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Actionscript.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Actionscript.gitignore", ch)
 			case "ada":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Ada.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Ada.gitignore", ch)
 			case "agda":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Agda.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Agda.gitignore", ch)
 			case "android":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Android.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Android.gitignore", ch)
 			case "appengine":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/AppEngine.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/AppEngine.gitignore", ch)
 			case "appceleratortitanium":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/AppceleratorTitanium.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/AppceleratorTitanium.gitignore", ch)
 			case "archlinuxpackages":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ArchLinuxPackages.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ArchLinuxPackages.gitignore", ch)
 			case "autotools":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Autotools.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Autotools.gitignore", ch)
 
 			case "c++":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/C%2B%2B.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/C%2B%2B.gitignore", ch)
 			case "c":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/C.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/C.gitignore", ch)
 			case "cfwheels":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CFWheels.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CFWheels.gitignore", ch)
 			case "cmake":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CMake.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CMake.gitignore", ch)
 			case "cuda":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CUDA.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CUDA.gitignore", ch)
 			case "cakephp":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CakePHP.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CakePHP.gitignore", ch)
 			case "chefcookbook":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ChefCookbook.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ChefCookbook.gitignore", ch)
 			case "clojure":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Clojure.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Clojure.gitignore", ch)
 			case "codeigniter":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CodeIgniter.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CodeIgniter.gitignore", ch)
 			case "commonlisp":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CommonLisp.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CommonLisp.gitignore", ch)
 			case "composer":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Composer.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Composer.gitignore", ch)
 			case "concrete5":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Concrete5.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Concrete5.gitignore", ch)
 			case "coq":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Coq.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Coq.gitignore", ch)
 			case "craftcms":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CraftCMS.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/CraftCMS.gitignore", ch)
 
 			case "d":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/D.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/D.gitignore", ch)
 			case "dm":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/DM.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/DM.gitignore", ch)
 			case "dart":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Dart.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Dart.gitignore", ch)
 			case "delphi":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Delphi.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Delphi.gitignore", ch)
 			case "drupal":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Drupal.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Drupal.gitignore", ch)
 			case "episerver":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/EPiServer.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/EPiServer.gitignore", ch)
 			case "eagle":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Eagle.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Eagle.gitignore", ch)
 			case "elisp":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Elisp.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Elisp.gitignore", ch)
 			case "elixir":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Elixir.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Elixir.gitignore", ch)
 			case "elm":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Elm.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Elm.gitignore", ch)
 			case "erlang":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Erlang.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Erlang.gitignore", ch)
 			case "expressionengine":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ExpressionEngine.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ExpressionEngine.gitignore", ch)
 			case "extjs":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ExtJs.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ExtJs.gitignore", ch)
 			case "fancy":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Fancy.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Fancy.gitignore", ch)
 			case "finale":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Finale.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Finale.gitignore", ch)
 			case "forcedotcom":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ForceDotCom.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ForceDotCom.gitignore", ch)
 			case "fortran":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Fortran.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Fortran.gitignore", ch)
 			case "fuelphp":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/FuelPHP.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/FuelPHP.gitignore", ch)
 
 			case "gwt":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/GWT.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/GWT.gitignore", ch)
 			case "gcov":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Gcov.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Gcov.gitignore", ch)
 			case "gitbook":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/GitBook.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/GitBook.gitignore", ch)
 			case "go":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Go.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Go.gitignore", ch)
 			case "gradle":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Gradle.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Gradle.gitignore", ch)
 			case "grails":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Grails.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Grails.gitignore", ch)
 
 			case "haskell":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Haskell.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Haskell.gitignore", ch)
 
 			case "igorpro":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/IGORPro.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/IGORPro.gitignore", ch)
 			case "idris":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Idris.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Idris.gitignore", ch)
 
 			case "java":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Java.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Java.gitignore", ch)
 			case "jboss":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Jboss.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Jboss.gitignore", ch)
 			case "jekyll":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Jekyll.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Jekyll.gitignore", ch)
 			case "joomla":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Joomla.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Joomla.gitignore", ch)
 			case "julia":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Julia.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Julia.gitignore", ch)
 
 			case "kicad":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/KiCad.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/KiCad.gitignore", ch)
 			case "kohana":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/kohana.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/kohana.gitignore", ch)
 
 			case "labview":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/LabVIEW.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/LabVIEW.gitignore", ch)
 			case "laravel":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Laravel.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Laravel.gitignore", ch)
 			case "leiningen":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Leiningen.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Leiningen.gitignore", ch)
 			case "lemonstand":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/LemonStand.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/LemonStand.gitignore", ch)
 			case "lilypond":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Lilypond.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Lilypond.gitignore", ch)
 			case "lithium":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Lithium.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Lithium.gitignore", ch)
 			case "lua":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Lua.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Lua.gitignore", ch)
 
 			case "magento":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Magento.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Magento.gitignore", ch)
 			case "maven":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Maven.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Maven.gitignore", ch)
 			case "mercury":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Mercury.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Mercury.gitignore", ch)
 			case "metaprogrammingsystem":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/MetaProgrammingSystem.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/MetaProgrammingSystem.gitignore", ch)
 
 			case "nanoc":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Nanoc.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Nanoc.gitignore", ch)
 			case "nim":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Nim.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Nim.gitignore", ch)
 			case "node":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore", ch)
 
 			case "ocaml":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/OCaml.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/OCaml.gitignore", ch)
 			case "objective-c":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Objective-C.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Objective-C.gitignore", ch)
 			case "opa":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Opa.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Opa.gitignore", ch)
 			case "opencart":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/OpenCart.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/OpenCart.gitignore", ch)
 			case "oracleforms":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/OracleForms.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/OracleForms.gitignore", ch)
 
 			case "packer":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Packer.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Packer.gitignore", ch)
 			case "perl":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Perl.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Perl.gitignore", ch)
 			case "phalcon":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Phalcon.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Phalcon.gitignore", ch)
 			case "playframework":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/PlayFramework.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/PlayFramework.gitignore", ch)
 			case "plone":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Plone.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Plone.gitignore", ch)
 			case "prestashop":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Prestashop.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Prestashop.gitignore", ch)
 			case "processing":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Processing.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Processing.gitignore", ch)
 			case "python":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore", ch)
 
 			case "qooxdoo":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Qooxdoo.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Qooxdoo.gitignore", ch)
 			case "qt":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Qt.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Qt.gitignore", ch)
 
 			case "r":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/R.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/R.gitignore", ch)
 			case "ros":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ROS.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ROS.gitignore", ch)
 			case "rails":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Rails.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Rails.gitignore", ch)
 			case "rhodesrhomobile":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/RhodesRhomobile.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/RhodesRhomobile.gitignore", ch)
 			case "ruby":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Ruby.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Ruby.gitignore", ch)
 			case "rust":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Rust.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Rust.gitignore", ch)
 
 			case "scons":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SCons.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SCons.gitignore", ch)
 			case "sass":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Sass.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Sass.gitignore", ch)
 			case "scala":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Scala.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Scala.gitignore", ch)
 			case "scheme":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Scheme.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Scheme.gitignore", ch)
 			case "scrivener":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Scrivener.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Scrivener.gitignore", ch)
 			case "sdcc":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Sdcc.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Sdcc.gitignore", ch)
 			case "seamgen":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SeamGen.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SeamGen.gitignore", ch)
 			case "sketchup":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SketchUp.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SketchUp.gitignore", ch)
 			case "smalltalk":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Smalltalk.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Smalltalk.gitignore", ch)
 			case "stella":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Stella.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Stella.gitignore", ch)
 			case "sugarcrm":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SugarCRM.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SugarCRM.gitignore", ch)
 			case "swift":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Swift.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Swift.gitignore", ch)
 			case "symfony":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Symfony.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Symfony.gitignore", ch)
 			case "symphonycms":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SymphonyCMS.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/SymphonyCMS.gitignore", ch)
 
 			case "tex":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/TeX.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/TeX.gitignore", ch)
 			case "terraform":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Terraform.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Terraform.gitignore", ch)
 			case "textpattern":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Textpattern.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Textpattern.gitignore", ch)
 			case "turbogears2":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/TurboGears2.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/TurboGears2.gitignore", ch)
 			case "typo3":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Typo3.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Typo3.gitignore", ch)
 
 			case "umbraco":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Umbraco.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Umbraco.gitignore", ch)
 			case "unity":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Unity.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Unity.gitignore", ch)
 			case "unrealengine":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/UnrealEngine.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/UnrealEngine.gitignore", ch)
 
 			case "vvvv":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/VVVV.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/VVVV.gitignore", ch)
 			case "visualstudio":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/VisualStudio.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/VisualStudio.gitignore", ch)
 
 			case "waf":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Waf.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Waf.gitignore", ch)
 			case "wordpress":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/WordPress.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/WordPress.gitignore", ch)
 
 			case "xojo":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Xojo.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Xojo.gitignore", ch)
 
 			case "yeoman":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Yeoman.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Yeoman.gitignore", ch)
 			case "yii":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Yii.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Yii.gitignore", ch)
 
 			case "zendframework":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ZendFramework.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/ZendFramework.gitignore", ch)
 			case "zephir":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Zephir.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Zephir.gitignore", ch)
 
 			// global
 			case "anjuta":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Anjuta.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Anjuta.gitignore", ch)
 			case "ansible":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Ansible.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Ansible.gitignore", ch)
 			case "archives":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Archives.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Archives.gitignore", ch)
 
 			case "bazaar":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Bazaar.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Bazaar.gitignore", ch)
 			case "bricxcc":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/BricxCC.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/BricxCC.gitignore", ch)
 
 			case "cvs":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/CVS.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/CVS.gitignore", ch)
 			case "calabash":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Calabash.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Calabash.gitignore", ch)
 			case "cloud9":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Cloud9.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Cloud9.gitignore", ch)
 			case "codekit":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/CodeKit.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/CodeKit.gitignore", ch)
 
 			case "darteditor":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/DartEditor.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/DartEditor.gitignore", ch)
 			case "dreamweaver":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Dreamweaver.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Dreamweaver.gitignore", ch)
 			case "dropbox":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Dropbox.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Dropbox.gitignore", ch)
 
 			case "eclipse":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Eclipse.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Eclipse.gitignore", ch)
 			case "eiffelstudio":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/EiffelStudio.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/EiffelStudio.gitignore", ch)
 			case "emacs":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Emacs.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Emacs.gitignore", ch)
 			case "ensime":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Ensime.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Ensime.gitignore", ch)
 			case "espresso":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Espresso.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Espresso.gitignore", ch)
 
 			case "flexbuilder":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/FlexBuilder.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/FlexBuilder.gitignore", ch)
 
 			case "gpg":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/GPG.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/GPG.gitignore", ch)
 
 			case "jdeveloper":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/JDeveloper.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/JDeveloper.gitignore", ch)
 			case "jetbrains":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/JetBrains.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/JetBrains.gitignore", ch)
 
 			case "kdevelop4":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/KDevelop4.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/KDevelop4.gitignore", ch)
 			case "kate":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Kate.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Kate.gitignore", ch)
 
 			case "lazarus":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Lazarus.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Lazarus.gitignore", ch)
 			case "libreoffice":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/LibreOffice.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/LibreOffice.gitignore", ch)
 			case "linux":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Linux.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Linux.gitignore", ch)
 			case "lyx":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/LyX.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/LyX.gitignore", ch)
 
 			case "matlab":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Matlab.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Matlab.gitignore", ch)
 			case "mercurial":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Mercurial.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Mercurial.gitignore", ch)
 			case "microsoftoffice":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/MicrosoftOffice.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/MicrosoftOffice.gitignore", ch)
 			case "modelsim":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/ModelSim.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/ModelSim.gitignore", ch)
 			case "momentics":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Momentics.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Momentics.gitignore", ch)
 			case "monodevelop":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/MonoDevelop.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/MonoDevelop.gitignore", ch)
 
 			case "netbeans":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/NetBeans.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/NetBeans.gitignore", ch)
 			case "ninja":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Ninja.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Ninja.gitignore", ch)
 			case "notepadpp":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/NotepadPP.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/NotepadPP.gitignore", ch)
 
 			case "otto":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Otto.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Otto.gitignore", ch)
 
 			case "redcar":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Redcar.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Redcar.gitignore", ch)
 			case "redis":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Redis.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Redis.gitignore", ch)
 
 			case "sbt":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/SBT.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/SBT.gitignore", ch)
 			case "svn":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/SVN.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/SVN.gitignore", ch)
 			case "slickedit":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/SlickEdit.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/SlickEdit.gitignore", ch)
 			case "sublimetext":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/SublimeText.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/SublimeText.gitignore", ch)
 			case "synopsysvcs":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/SynopsysVCS.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/SynopsysVCS.gitignore", ch)
 
 			case "tags":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Tags.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Tags.gitignore", ch)
 			case "textmate":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/TextMate.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/TextMate.gitignore", ch)
 			case "tortoisegit":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/TortoiseGit.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/TortoiseGit.gitignore", ch)
 
 			case "vagrant":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Vagrant.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Vagrant.gitignore", ch)
 			case "vim":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Vim.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Vim.gitignore", ch)
 			case "virtualenv":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/VirtualEnv.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/VirtualEnv.gitignore", ch)
 			case "visualstudiocode":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore", ch)
 
 			case "webmethods":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/WebMethods.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/WebMethods.gitignore", ch)
 
 			case "windows":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Windows.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Windows.gitignore", ch)
 
 			case "xcode":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Xcode.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/Xcode.gitignore", ch)
 			case "xilinxise":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/XilinxISE.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/XilinxISE.gitignore", ch)
 
 			case "macos":
-				copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore")
+				go copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore", ch)
 
 			default:
 				fmt.Println("Given argument was not a recognized .gitignore default")
 
 			}
 		}
+
+		// write []byte in channel ch to file
+		for range os.Args[1:] {
+			updateGitignore(<-ch)
+		}
+		fmt.Println("Updated .gitignore with the requested patterns")
 	} else {
 		fmt.Println("Please pass type of gitignore to create, like: gitignore python")
 	}
