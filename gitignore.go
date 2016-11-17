@@ -46,6 +46,7 @@ func main() {
 	if (len(os.Args)) >= 2 {
 		// []byte to store multiple .gitignore request bodies
 		ch := make(chan []byte)
+		unknown_envs := 0
 		fmt.Println("Retrieving the requested .gitignore patterns from github.com/github/gitignore")
 		for i := 1; i < len(os.Args); i++ {
 			// for each arg add retrieve the gitignore
@@ -455,12 +456,11 @@ func main() {
 
 			default:
 				fmt.Println("Given argument was not a recognized .gitignore default")
-
+				unknown_envs += 1
 			}
 		}
-
 		// write []byte in channel ch to file
-		for range os.Args[1:] {
+		for i := 0; i < len(os.Args[1:])-unknown_envs; i++ {
 			updateGitignore(<-ch)
 		}
 		fmt.Println("Updated .gitignore with the requested patterns")
