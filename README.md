@@ -34,7 +34,7 @@ go install
 ````
 
 ### From binary
-Not available yet, but very soon.
+Looks in the builds/ directory of the repository for your system and use that for your executable.  Add to your bin or applications or any folder you want to use it from.
 
 
 ## Long List of Available .gitignores
