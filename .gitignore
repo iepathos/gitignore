@@ -24,6 +24,19 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+*~
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
@@ -54,16 +67,21 @@ _testmain.go
 
 # external packages folder
 vendor/
-*~
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
 
-# temporary files which can be created if a process still has a handle open of a deleted file
-.fuse_hidden*
+# Folder config file
+Desktop.ini
 
-# KDE directory preferences
-.directory
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
 
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
 
-# .nfs files are created when an open file is removed but is still being accessed
-.nfs*
+# Windows shortcuts
+*.lnk
