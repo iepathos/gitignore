@@ -34,11 +34,15 @@ func main() {
 	if (len(os.Args)) >= 2 {
 		switch env := os.Args[1]; env {
 		case "python":
-			// https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
 			copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore")
 		case "go":
-			// https://raw.githubusercontent.com/github/gitignore/master/Go.gitignore
 			copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Go.gitignore")
+		case "node":
+			copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore")
+		case "ruby":
+			copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Ruby.gitignore")
+		case "rust":
+			copyGitignoreUrl("https://raw.githubusercontent.com/github/gitignore/master/Rust.gitignore")
 		default:
 			fmt.Println("Please pass type of gitignore to create, like: gitignore python")
 		}
