@@ -7,8 +7,20 @@ This is a Go application that creates a default gitignore based on the type of p
 
 Creates a .gitignore in the current working directory with the defaults for the specified type of project.
 
-## Available Gitignores
+````shell
+gitignore python
+gitignore go
 ````
+
+But wait, there's more!  You can chain multiple gitignores together.
+````shell
+gitignore macos linux windows python node vim
+````
+
+Now your .gitignore contains all of the default .gitignore patterns from all of the github gitignores for MacOS, Linux, Windows, Python, Node, and Vim, so you're ready to commit w/e you need to on a cross-platform polyglot application.
+
+## Available Gitignores
+````shell
 gitignore actionscript
 gitignore ada
 gitignore agda
