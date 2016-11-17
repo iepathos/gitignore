@@ -39,7 +39,6 @@ func copyGitignoreUrl(url string, ch chan<- []byte) {
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Println("Retrieved", url)
 	ch <- body
 }
 
@@ -49,7 +48,7 @@ func main() {
 		ch := make(chan []byte)
 		fmt.Println("Retrieving the requested .gitignore patterns from github.com/github/gitignore")
 		for i := 1; i < len(os.Args); i++ {
-			// for each arg add its env to the gitignore
+			// for each arg add retrieve the gitignore
 			// this way we can chain multiple gitignore together
 			// like: gitignore macos python node
 			switch env := strings.ToLower(os.Args[i]); env {
