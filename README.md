@@ -27,11 +27,9 @@ If you have a pre-existing .gitignore with some custom entries, don't worry, git
 ### From Source
 Install Go https://golang.org/
 
-Clone
+and then just get it
 ````
-git clone https://github.com/iepathos/gitignore.git
-cd gitignore
-go install
+go get github.com/iepathos/gitignore
 ````
 
 ### From binary
