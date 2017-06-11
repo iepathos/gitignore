@@ -7,12 +7,85 @@ package main
 // a GNU General Public License v3.0
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 )
+
+func StringToLines(s string) []string {
+	var lines []string
+
+	scanner := bufio.NewScanner(strings.NewReader(s))
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, "reading standard input:", err)
+	}
+
+	return lines
+}
+
+func RemoveDuplicates(xs *[]string) {
+	found := make(map[string]bool)
+	j := 0
+	for i, x := range *xs {
+		if !found[x] {
+			found[x] = true
+			(*xs)[j] = (*xs)[i]
+			j++
+		}
+	}
+	*xs = (*xs)[:j]
+}
+
+func findMatches(text string, pat string) []string {
+	orig := pat
+	pat = strings.Replace(pat, ".", "\\.", -1)
+	pat = strings.Replace(pat, "*", ".", -1)
+	fmt.Println(pat)
+	re := regexp.MustCompile(pat)
+	match := re.FindAllString(text, -1)
+	var rv []string
+	for _, s := range match {
+		if s != orig {
+			rv = append(rv, s)
+		}
+	}
+	return rv
+}
+
+func readGitignore(path string) string {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	return string(data)
+}
+
+func findReConflicts(path string) {
+	text := readGitignore(path)
+	lines := StringToLines(text)
+	RemoveDuplicates(&lines)
+	var matches = make(map[string][]string)
+	for _, line := range lines {
+		// ignore .gitignore comment lines
+		if !strings.HasPrefix(line, "#") {
+			matches[line] = findMatches(text, line)
+		}
+	}
+	for k, v := range matches {
+		fmt.Println("Pattern: ", k)
+		for _, s := range v {
+			fmt.Println("Conflicting Patterns: ", s)
+		}
+	}
+}
 
 func updateGitignore(body []byte) {
 	// write to file
@@ -464,6 +537,8 @@ func main() {
 			updateGitignore(<-ch)
 		}
 		fmt.Println("Updated .gitignore with the requested patterns")
+
+		findReConflicts(".gitignore")
 	} else {
 		fmt.Println("Please pass type of gitignore to create, like: gitignore python")
 	}
