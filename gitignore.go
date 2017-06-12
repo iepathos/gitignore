@@ -620,8 +620,8 @@ func main() {
 		}
 		fmt.Println("Updated .gitignore with the requested patterns")
 		cleanupLines(".gitignore")
-		// fmt.Println("Cleaned up any duplicate lines")
-
+		fmt.Println("Cleaned up any duplicate lines")
+		fmt.Println("Cleand up any comments")
 		findPatternConflicts(".gitignore")
 	} else {
 		fmt.Println("Please pass type of gitignore to create, like: gitignore python")
