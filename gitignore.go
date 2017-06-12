@@ -32,10 +32,26 @@ func StringToLines(s string) []string {
 }
 
 func RemoveDuplicates(xs *[]string) {
+	// also remove any blank lines
 	found := make(map[string]bool)
 	j := 0
 	for i, x := range *xs {
-		if !found[x] {
+		if x != "" {
+			if !found[x] {
+				found[x] = true
+				(*xs)[j] = (*xs)[i]
+				j++
+			}
+		}
+	}
+	*xs = (*xs)[:j]
+}
+
+func RemoveComments(xs *[]string) {
+	found := make(map[string]bool)
+	j := 0
+	for i, x := range *xs {
+		if !strings.HasPrefix(x, "#") {
 			found[x] = true
 			(*xs)[j] = (*xs)[i]
 			j++
@@ -48,7 +64,7 @@ func findMatches(text string, pat string) []string {
 	orig := pat
 	pat = strings.Replace(pat, ".", "\\.", -1)
 	pat = strings.Replace(pat, "*", ".", -1)
-	fmt.Println(pat)
+	// fmt.Println(pat)
 	re := regexp.MustCompile(pat)
 	match := re.FindAllString(text, -1)
 	var rv []string
@@ -60,7 +76,7 @@ func findMatches(text string, pat string) []string {
 	return rv
 }
 
-func readGitignore(path string) string {
+func readFile(path string) string {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		panic(err)
@@ -68,21 +84,70 @@ func readGitignore(path string) string {
 	return string(data)
 }
 
-func findReConflicts(path string) {
-	text := readGitignore(path)
-	lines := StringToLines(text)
-	RemoveDuplicates(&lines)
-	var matches = make(map[string][]string)
+func getMatchingLines(lines []string, pat string) []string {
+	var matched []string
 	for _, line := range lines {
-		// ignore .gitignore comment lines
-		if !strings.HasPrefix(line, "#") {
-			matches[line] = findMatches(text, line)
+		if strings.Contains(line, pat) {
+			matched = append(matched, line)
 		}
 	}
+	return matched
+}
+
+func moveAstericksToStart(lines []string) []string {
+	var asterick []string
+	var rv []string
+	for _, line := range lines {
+		if strings.HasPrefix(line, "*") {
+			asterick = append(asterick, line)
+		} else {
+			rv = append(rv, line)
+		}
+	}
+
+	for _, v := range rv {
+		asterick = append(asterick, v)
+	}
+	return asterick
+}
+
+func moveExclamationsToEnd(lines []string) []string {
+	// moves any line beginning with ! to the end of the []string
+	var exclamations []string
+	var rv []string
+	for _, line := range lines {
+		if strings.HasPrefix(line, "!") {
+			exclamations = append(exclamations, line)
+		} else {
+			rv = append(rv, line)
+		}
+	}
+
+	for _, v := range exclamations {
+		rv = append(rv, v)
+	}
+	return rv
+}
+
+func findPatternConflicts(path string) {
+	text := readFile(path)
+	lines := StringToLines(text)
+	RemoveDuplicates(&lines)
+	RemoveComments(&lines)
+	text = strings.Join(lines, "\n")
+	var matches = make(map[string][]string)
+	for _, line := range lines {
+		matches[line] = findMatches(text, line)
+	}
 	for k, v := range matches {
-		fmt.Println("Pattern: ", k)
-		for _, s := range v {
-			fmt.Println("Conflicting Patterns: ", s)
+		if len(v) > 0 {
+			fmt.Println("Pattern: ", k)
+			for _, s := range v {
+				matched := getMatchingLines(lines, s)
+				for _, m := range matched {
+					fmt.Println("Conflicting Pattern: ", m)
+				}
+			}
 		}
 	}
 }
@@ -101,6 +166,19 @@ func updateGitignore(body []byte) {
 	}
 }
 
+func cleanupLines(path string) error {
+	text := readFile(path)
+	lines := StringToLines(text)
+	RemoveDuplicates(&lines)
+	RemoveComments(&lines)
+	lines = moveExclamationsToEnd(lines)
+	lines = moveAstericksToStart(lines)
+	lines = append(lines, "\n")
+	text = strings.Join(lines, "\n")
+	err := ioutil.WriteFile(path, []byte(text), 0644)
+	return err
+}
+
 func copyGitignoreUrl(url string, ch chan<- []byte) {
 	// retrieve gitignore from given url
 	resp, err := http.Get(url)
@@ -108,10 +186,12 @@ func copyGitignoreUrl(url string, ch chan<- []byte) {
 		panic(err)
 	}
 	defer resp.Body.Close()
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		panic(err)
 	}
+
 	ch <- body
 }
 
@@ -537,8 +617,10 @@ func main() {
 			updateGitignore(<-ch)
 		}
 		fmt.Println("Updated .gitignore with the requested patterns")
+		cleanupLines(".gitignore")
+		// fmt.Println("Cleaned up any duplicate lines")
 
-		findReConflicts(".gitignore")
+		findPatternConflicts(".gitignore")
 	} else {
 		fmt.Println("Please pass type of gitignore to create, like: gitignore python")
 	}
