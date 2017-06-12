@@ -35,17 +35,9 @@ and then just get it
 go get github.com/iepathos/gitignore
 ````
 
-### From binary
-Look in the [builds directory](https://github.com/iepathos/gitignore/tree/master/builds) of the repository for your system and use that for your executable.  Add to your bin or applications or any folder you want to use it from.
-
-
-## Planned Additions
-
-+ Add some custom stack defaults
-
 
 ## Long List of Available .gitignores
-Any .gitignore available on https://github.com/github/gitignore should be available here.  If you find one that isn't, shoot a pull request or message to Glen Baker <iepathos@gmail.com>.
+Any .gitignore available on https://github.com/github/gitignore should be available here.  If you find one that isn't, please shoot a pull request or message to Glen Baker <iepathos@gmail.com>.
 
 ````shell
 gitignore actionscript
