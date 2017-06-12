@@ -1,6 +1,6 @@
 Simple Gitignore From Github
 ---------
-This is a Go application that creates a default .gitignore based on the type of project specified.  Templates for the default .gitignore come from https://github.com/github/gitignore which is open source and actively contributed to, so you will always get an up to date gitignore for your projects using this tool!  In fact, the gitignore in this very project was the first .gitignore created using this tool.
+This is a Go application that creates a default .gitignore based on the type of project specified.  Templates for the default .gitignore come from https://github.com/github/gitignore which is open source and actively contributed to, so you will always get an up to date gitignore for your projects using this tool!
 
 
 ## Usage
