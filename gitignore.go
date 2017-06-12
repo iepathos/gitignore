@@ -144,9 +144,11 @@ func findPatternConflicts(path string) {
 			for _, s := range v {
 				matched := getMatchingLines(lines, s)
 				for _, m := range matched {
+					fmt.Println("Pattern: ", k)
 					if strings.HasPrefix(m, "!") {
-						fmt.Println("Pattern: ", k)
 						fmt.Println("Conflicting Pattern: ", m)
+					} else {
+						fmt.Println("Matches Pattern: ", m)
 					}
 				}
 			}
