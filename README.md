@@ -21,7 +21,9 @@ Now your .gitignore contains all of the default .gitignore patterns from all of 
 
 If you have a pre-existing .gitignore with some custom entries, don't worry, gitignore does not overwrite, it appends to any existing .gitignore file.
 
-Please note that .gitignore uses a last rule wins policy and that while the .gitignore files hosted on github are tested and reliable, when chained together they may have unexpected conflicts especially depending on the order they are added.
+Please note that .gitignore uses a last rule wins policy and that while the .gitignore files hosted on github are tested and reliable, when chained together they may have unexpected conflicts especially depending on the order they are added.  If there is a pattern conflict found, gitignore will tell you.  Additionally, comments and duplicate lines are cleaned up from the .gitignore.  Some attempt is made to adapt conflicting patterns to work with eachother better like lines beginning with ! are moved to the end and lines beginning with * are moved to the beginning.
+
+
 
 ## Installation
 
@@ -275,6 +277,4 @@ gitignore macos
 
 
 
-
-
-This is an open source project reated to save us all from the hassle of copy-pasting default gitignore files for new projects.  Added under a GNU Public License v3.0.
+This is an open source project under a GNU Public License v3.0.
